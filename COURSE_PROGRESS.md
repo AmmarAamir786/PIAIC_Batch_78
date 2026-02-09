@@ -163,6 +163,112 @@ Deep dive into how Claude Code manages context and integrates with MCP (Model Co
 
 ---
 
+### 8. Claude & Agent Orchestration
+
+Explored advanced topics in agent orchestration, configuration files, and understanding how main and sub-agents work together.
+
+**Markdown & VS Code:**
+
+- Markdown files use `.md` extension (claude.md, agents.md, skills.md)
+- Preview markdown files in VS Code using preview icon or markdown viewer extension
+- Markdown is used for instructions, skills, agent configuration, and clean formatting
+
+**Configuration Files:**
+
+- **CLAUDE.md**: Defines Claude Code's behavior
+  - Project-specific instructions for Claude Code
+  - Controls how Claude responds and behaves
+  - Can include directory structure explanations
+  - Can reference other files using `@Agents.md` syntax
+- **AGENTS.md**: Shared configuration for multiple coding agents
+  - Can be referenced by Claude Code using `@Agents.md` in CLAUDE.md
+  - Other coding agents such as qwen cli, gemini cli and copilot can also reference this file
+  - Useful for maintaining consistent instructions across different AI assistants
+  - Helps document agent roles and responsibilities in multi-agent projects
+
+**Agent Orchestration Architecture:**
+
+**Main Agent:**
+
+- Receives user prompts
+- Handles user queries
+- Breaks tasks into smaller parts
+- Delegates work to sub-agents
+- Combines final output from sub-agents
+- Has its own context window
+
+**Sub-Agents:**
+
+- Support the main agent
+- Handle specific tasks (research, writing, coding, debugging)
+- Work independently in their own context window
+- Generate summaries and return results to main agent
+- Field-specific capabilities
+
+**Orchestration Flow:**
+
+1. User submits query
+2. Main agent analyzes task
+3. Decides which sub-agent to delegate to
+4. Sub-agents perform assigned tasks in their own context window
+5. Sub-agents summarize output and return to main agent
+6. Main agent delivers final output
+
+**Creating Custom Sub-Agents:**
+
+- Use `/agents` command in your project folder to create custom sub-agents
+- Assign specific roles, examples, and tasks to each sub-agent
+- Each agent can be specialized for different fields or purposes
+- Custom agents are stored in `.claude/agents` folder
+- Sub-agents work independently with their own context windows
+- Main agent invokes sub-agents using when needed
+
+**Context Management Best Practices:**
+
+- Main agent has its own context window
+- Each sub-agent has its own separate context window
+- Avoid giving unnecessary data to the main agent
+- Main agent will automatically use explore sub-agent to search through project directories efficiently
+- Sub-agents report findings back without polluting main agent's context
+
+**Configuration Types:**
+
+- **Global configuration**: Applies to all projects
+- **Personal configuration**: Project-specific settings
+
+**Hooks:**
+
+Hooks are shell commands that execute automatically in response to specific events during Claude Code's operation (such as tool calls).
+
+**What Hooks Enable:**
+
+- Run custom scripts when certain events occur
+- Execute validation checks automatically
+- Trigger build processes or tests
+- Integrate with external tools and workflows
+- Automate repetitive tasks based on Claude's actions
+
+**Hooks vs Prompts:**
+
+| Prompts        | Hooks                  |
+| -------------- | ---------------------- |
+| Text input     | Shell commands         |
+| Manual         | Automatic/event-driven |
+| Static         | Dynamic/reactive       |
+| User-initiated | Event-triggered        |
+
+**Key Takeaways:**
+
+- Markdown is essential for agent configuration
+- `claude.md` is for Claude Code; can reference shared files using `@` syntax
+- `agents.md` can be shared across multiple coding agents when referenced properly
+- Custom sub-agents can be created with `/agents` command and stored in `.claude/agents`
+- Sub-agents simplify complex tasks through delegation and parallel processing
+- Proper context management prevents information overload and helps Claude focus only on the problem at hand
+- Hooks enable event-driven automation through shell commands
+
+---
+
 ## Next Steps
 
 - Continue practicing with custom skills
@@ -182,4 +288,4 @@ Deep dive into how Claude Code manages context and integrates with MCP (Model Co
 
 ---
 
-**Last Updated:** February 2, 2026
+**Last Updated:** February 7, 2026
