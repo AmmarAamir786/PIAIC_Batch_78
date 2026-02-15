@@ -269,6 +269,158 @@ Hooks are shell commands that execute automatically in response to specific even
 
 ---
 
+### 9. Claude Code Stop Hook, Plugins & Advanced Workflows
+
+Deep dive into Claude Code's stop hook functionality, plugins ecosystem, and advanced development workflows.
+
+**Stop Hook in Detail:**
+
+- **What is Stop Hook**: A special hook that executes shell commands automatically before Claude Code stops or exits
+- **Use Cases**:
+  - Running cleanup scripts
+- **Configuration**: Defined in Claude Code settings ".claude/settings.json"
+- **Event Trigger**: Fires when Claude Code session ends
+
+**Plugins:**
+
+- **What are Plugins**: Extensions that add additional functionality to Claude Code
+- **Plugin Management**: Install, enable, disable, and configure plugins
+
+**Anthropic's Marketplace:**
+
+- **Overview**: Official marketplace for Claude Code plugins, skills, and MCP servers
+- **What's Available**:
+  - Verified plugins from Anthropic
+  - Community-contributed tools
+  - Pre-built skills and templates
+  - MCP server integrations
+- **Benefits**: Quality-assured, well-documented, and community-supported resources
+
+**Ralph Wiggum Loop in Detail:**
+
+**What is Ralph Wiggum Loop**: A Claude Code plugin that enables **autonomous iteration**—Claude runs a task, checks results, identifies problems, fixes them, and repeats until completion criteria are met, all without your intervention
+
+- **The Problem It Solves**: **Iteration fatigue**—manually running commands, copying errors, pasting back to Claude, and repeating this cycle dozens of times
+
+  - Example: Fixing 47 linting errors requires copying output and waiting for Claude 10+ times
+  - Hidden costs: waiting time, context switching, error transcription mistakes
+- **How It Works**:
+
+  - Uses **Stop hook** to intercept Claude's normal exit behavior
+  - When Claude tries to stop, the hook checks if completion promise is met
+  - If not complete: reinjects prompt asking Claude to verify, fix, and continue
+  - If complete or max iterations reached: allows Claude to stop
+  - Claude remembers conversation history, creating a **self-correcting loop**
+- **Architecture**:
+
+  - **Stop Hook**: Intercepts Claude's exit to reinject continuation prompts
+  - **Completion Promise**: Exact text that signals "we're done" (e.g., "0 problems" or custom marker)
+  - **Max Iterations**: Safety limit preventing infinite loops and controlling costs
+  - **Loop Prompt**: Template asking Claude to verify results and continue
+- **Best Practice Usage Pattern** (Embedded Promise - Recommended):
+
+  ```bash
+  /ralph-loop "Task description:
+  - Requirement 1
+  - Requirement 2
+  Output <promise>COMPLETION_MARKER</promise> when done." \
+  --max-iterations 20 \
+  --completion-promise "COMPLETION_MARKER"
+  ```
+- **Good Use Cases** (10+ iterations, objective completion):
+
+  - Framework upgrades (React v16→v19, Next.js 14→15)
+  - Test-driven refactoring (fix until all tests pass)
+  - Linting/type error resolution
+  - Deployment debugging (iterate until health check passes)
+- **Poor Use Cases**:
+
+  - Tasks requiring human judgment (strategy, aesthetics, priorities)
+  - Exploratory research (no clear completion criteria)
+  - Creative work (subjective quality assessment)
+  - Multi-goal tasks ("fix bugs AND add features")
+  - Tasks requiring external input (API keys, approvals)
+- **Safety and Cost Management**:
+
+  - Real-world costs: $50-100 for 14-hour sessions, $30-40 for 30 iterations
+  - **Always** set `--max-iterations` limit
+  - Use version control checkpoints before starting
+  - Monitor progress every 15-30 minutes
+  - Cancel with `/cancel-ralph` if same error repeats 3+ times
+  - Review results before merging—automation doesn't replace judgment
+- **Golden Rule**: Use Ralph Loop when success is **objective, verifiable, and deterministic**—measurable by tools, not human judgment
+
+**Creator's Workflow (Boris Cherny - Claude Code Creator at Anthropic):**
+
+- **Fundamental Principle**: Context window is the constraint—all practices manage context to prevent degradation
+- **Core Practices**:
+  - **Parallel Sessions** (3-20): "Single biggest productivity unlock"—run multiple isolated sessions for different tasks using separate directories/tabs
+  - **Plan Mode First**: Always use Plan Mode (Shift+Tab twice) for non-trivial tasks; iterate on plan until solid, then auto-accept execution
+  - **Claude-Reviews-Claude**: One session writes plan, second session reviews critically with fresh context to catch blind spots
+  - **Self-Writing CLAUDE.md**: After every correction say "Update your CLAUDE.md so you don't make that mistake again"—Claude writes better rules for itself
+  - **Session-End Review Skill**: Build `/session-review` or `/techdebt` skill, run at end of every session while context is fresh
+  - **Skills Portfolio**: "If you do something more than once a day, turn it into a skill"—build portable, reusable skills across projects
+  - **Subagents for Investigation**: Use subagents to explore in separate context windows, report back summaries without cluttering main session
+
+**Key Takeaways:**
+
+- Stop hooks provide automation opportunities at session end
+- Plugins extend Claude Code's core functionality beyond skills
+- Anthropic's marketplace offers curated, quality resources
+- Ralph Wiggum Loop enables autonomous iteration through Stop hook mechanism
+- Creator's Workflow provides production-grade practices for managing context and building with Claude
+- Agent Teams coordinate multiple independent Claude sessions for complex multi-perspective work
+- Proper planning and validation prevent common pitfalls
+
+---
+
+### 10. Agent Teams
+
+Coordinating multiple independent Claude Code sessions that communicate directly with each other through shared task lists and messaging.
+
+**What It Is:**
+
+- Multiple independent Claude sessions with separate context windows
+- Direct messaging between teammates (not just to lead)
+- Self-coordinate through shared task list with dependency chains
+
+**vs Subagents:**
+
+- **Subagents**: Fire-and-forget workers that report back to single caller
+- **Agent Teams**: Fully independent sessions that message each other and discuss findings
+
+**Setup:**
+
+Enable experimental feature in settings:
+
+```json
+{ "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" } }
+```
+
+**When to Use:**
+
+- **Use Teams**: Multi-angle investigations, competing hypotheses, cross-functional coordination where teammates need to discuss findings
+- **Use Subagents**: Single reports, simple summaries, tasks that just report back
+
+**Cost Consideration:**
+
+- 3-5x more tokens than single agent (each teammate has full context window)
+- Use strongest model for lead (synthesis), efficient models for teammates (research)
+
+**Common Patterns:**
+
+1. **Parallel Investigation**: Multiple specialists analyze same question from different angles, share findings
+2. **Pipeline Build**: Sequential dependencies where each stage feeds the next
+3. **Competing Hypotheses**: Investigators actively debate each other's theories to prevent anchoring bias
+
+**Navigation:**
+
+- Shift+Up/Down to switch between teammates
+- Ctrl+T to view shared task list
+- Direct message by selecting teammate and typing
+
+---
+
 ## Next Steps
 
 - Continue practicing with custom skills
@@ -288,4 +440,4 @@ Hooks are shell commands that execute automatically in response to specific even
 
 ---
 
-**Last Updated:** February 7, 2026
+**Last Updated:** February 15, 2026
