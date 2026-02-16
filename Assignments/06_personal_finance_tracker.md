@@ -561,6 +561,156 @@ And in the code, we read from this file instead of hardcoding the password. This
 
 ---
 
+### Phase 0.5: Give This Document to Claude Code (Spec-Driven Development)
+
+Now that your project folders are set up, it's time to start building — but **not by giving Claude Code one prompt at a time.** Instead, you'll use a much more powerful approach called **Spec-Driven Development.**
+
+#### What is Spec-Driven Development?
+
+Think about how buildings are constructed. Nobody starts laying bricks randomly. There's an **architectural blueprint** first — a detailed plan showing every room, wall, wire, and pipe. Construction workers follow that plan step by step.
+
+Spec-Driven Development is the same idea for software:
+
+```
+VIBE CODING (what we want to avoid):
+┌──────────────────────────────────────────────────────┐
+│  "Hey Claude, build me a finance tracker"            │
+│      │                                               │
+│      ▼                                               │
+│  Claude generates a bunch of code                    │
+│      │                                               │
+│      ▼                                               │
+│  Something breaks. You don't know why.               │
+│  You give another vague prompt.                      │
+│  Claude changes random things.                       │
+│  More things break. You're lost.  😩                 │
+└──────────────────────────────────────────────────────┘
+
+SPEC-DRIVEN (what professionals do):
+┌──────────────────────────────────────────────────────┐
+│  You give Claude this assignment document            │
+│      │                                               │
+│      ▼                                               │
+│  Claude reads it and generates a SPEC.md file        │
+│  with a detailed implementation plan:                │
+│  - [ ] Task 1: Set up database connection            │
+│  - [ ] Task 2: Create transaction model              │
+│  - [ ] Task 3: Create Pydantic schemas               │
+│  - [ ] Task 4: Build CRUD endpoints                  │
+│  ...and so on                                        │
+│      │                                               │
+│      ▼                                               │
+│  Claude works through tasks ONE by ONE               │
+│  Checks off each task as it completes ✅              │
+│  You can see progress. You can pause and resume.     │
+│  Nothing is random. Everything is planned.  🎯       │
+└──────────────────────────────────────────────────────┘
+```
+
+**A spec (specification)** is a document that describes EXACTLY what needs to be built, broken down into small, trackable tasks. It's the blueprint for your app.
+
+#### Why Does This Matter?
+
+1. **Context loss:** Claude Code can lose its memory during long sessions. With a SPEC.md, it can always read the file and know where it left off.
+2. **Progress tracking:** You can see exactly which tasks are done (✅) and which are remaining (⬜). No guessing.
+3. **Structured building:** Instead of random prompts, Claude follows a logical plan — database first, then API, then frontend, then tests.
+4. **Easy to resume:** If Claude loses context, crashes, or you take a break, you just say: "Read SPEC.md and continue from where we left off." Done.
+5. **Debugging is easier:** When something breaks, you know exactly which task caused it because tasks are completed one at a time.
+
+#### How To Do It
+
+**Step 1:** Open Claude Code in your `personal-finance-tracker` project folder.
+
+**Step 2:** Give Claude Code this prompt:
+
+> **"Read the file at `Assignments/06_personal_finance_tracker.md` (or paste the entire content of this assignment document). Based on this assignment, generate a `SPEC.md` file in the project root with:**
+>
+> **1. A project overview (one paragraph)**
+> **2. The tech stack (from the assignment)**
+> **3. A detailed, ordered task list of each phase with checkboxes for every piece of work needed — database setup, models, schemas, API endpoints, frontend pages, components, server actions, tests, etc.**
+> **4. Each task should be small enough to complete in one go**
+> **5. Group tasks by phase (Backend → Frontend → Integration → Testing)**
+> **6. Mark all tasks as not started `- [ ]` initially"**
+>
+
+**Step 3:** Once it has written the specs review it.
+> **"Start working through the tasks one by one of phase 1. After completing each task, mark it as done `- [x]` in SPEC.md. Do NOT skip ahead — complete and verify each task before moving to the next."**
+
+Let Claude work. It will:
+
+- Generate the SPEC.md with all tasks
+- Start implementing them one by one
+- Check off each task as it completes
+
+Once if done with phase 1 tasks, check and review what it has actually done. Then move to the next phase.
+
+**Step 4 (if Claude loses context):** This WILL happen during a long build. When it does, just say:
+
+> **"Read SPEC.md and continue from where we left off."**
+
+Claude will read the file, see which tasks have checkboxes checked, and pick up exactly where it stopped. No repeated work, no confusion.
+
+#### What Does SPEC.md Look Like?
+
+Here's a rough idea of what Claude will generate (yours may look slightly different, and that's fine):
+
+```markdown
+# Personal Finance Tracker — Implementation Spec
+
+## Overview
+A full-stack personal finance tracker with FastAPI backend and Next.js 16 frontend...
+
+## Tech Stack
+- Backend: FastAPI, SQLAlchemy, Pydantic, uv
+- Frontend: Next.js 16, Tailwind CSS, Recharts
+- Database: Neon PostgreSQL
+- Testing: pytest + httpx (backend), Vitest (frontend)
+
+## Tasks
+
+### Phase 1: Backend
+- [x] 1.1 Set up database connection (database.py)
+- [x] 1.2 Create Transaction model (models.py)
+- [x] 1.3 Create Pydantic schemas (schemas.py)
+- [ ] 1.4 Build CRUD endpoints (main.py)        ← Claude is here
+- [ ] 1.5 Add CORS middleware
+- [ ] 1.6 Add summary endpoint
+- [ ] 1.7 Test all endpoints via /docs
+
+### Phase 2: Frontend
+- [ ] 2.1 Create server actions (actions/transactions.ts)
+- [ ] 2.2 Build dashboard page with summary cards
+- [ ] 2.3 Add pie/donut chart for category breakdown
+- [ ] 2.4 Build transaction form component
+- [ ] 2.5 Build transaction list with filters
+- [ ] 2.6 Add navigation bar
+
+### Phase 3: Integration
+- [ ] 3.1 Connect frontend to backend
+- [ ] 3.2 Test full flow (add, edit, delete, filter)
+
+### Phase 4: Testing
+- [ ] 4.1 Write backend pytest tests
+- [ ] 4.2 Make all backend tests pass
+- [ ] 4.3 Write frontend Vitest tests
+- [ ] 4.4 Make all frontend tests pass
+```
+
+**This is YOUR project dashboard.** Glance at it anytime to know exactly where you stand.
+
+#### ⚠️ Important: You Still Need to Understand What's Being Built
+
+The spec-driven approach means Claude handles the implementation order and progress tracking — but **you still need to understand what each piece does and why.** The rest of this document (Phases 1-4 below) explains every concept in detail. **Read through them** so you can:
+
+1. Verify that what Claude builds is correct
+2. Explain your app to the instructor during evaluation
+3. Debug problems when they arise
+4. Learn the actual skills (not just watch an AI code)
+
+The phases below are your **learning material**, not your prompts. Your prompt is SPEC.md.
+
+---
+
 ### Phase 1: Build the Backend (FastAPI)
 
 We start with the backend because it's the foundation. The frontend needs the backend to work, but the backend can work on its own.
@@ -570,10 +720,6 @@ We start with the backend because it's the foundation. The frontend needs the ba
 **What you're doing:** Writing code that connects your Python application to your Neon PostgreSQL database.
 
 **Why:** Your app needs to talk to the database to save and retrieve transactions. This file creates that connection.
-
-**What to tell Claude Code:**
-
-> "Set up a database connection in `backend/database.py` using SQLAlchemy to connect to my Neon PostgreSQL database. The connection string should come from a `.env` file using `DATABASE_URL` environment variable. I'm using uv for package management — all dependencies are already in pyproject.toml."
 
 **What is SQLAlchemy?** It's a Python library that lets you interact with databases using Python code instead of raw SQL. Think of it as a translator between Python and the database. (You already installed it with `uv add sqlalchemy` in Step 0.2b!)
 
@@ -595,10 +741,6 @@ We start with the backend because it's the foundation. The frontend needs the ba
 | date        | Date     | When the transaction happened      | "2026-02-15"   |
 | created_at  | DateTime | When the record was created        | Auto-generated |
 
-**What to tell Claude Code:**
-
-> "Create a SQLAlchemy model in `backend/models.py` for a Transaction with these fields: id (primary key, auto-increment), description (string, required), amount (float, required), type (string, either 'income' or 'expense'), category (string, required), date (date), created_at (datetime, auto-set to now)."
-
 #### Step 1.3: Create Pydantic Schemas
 
 **What you're doing:** Defining the "rules" for what data your API accepts and returns.
@@ -615,13 +757,11 @@ With Pydantic:
 User sends: { amount: "not a number" }  →  Pydantic: "Error: amount must be a number"  ✓
 ```
 
-**What to tell Claude Code:**
+**You'll need these schemas:**
 
-> "Create Pydantic schemas in `backend/schemas.py` for:
->
-> - `TransactionCreate` — the data needed to create a transaction (description, amount, type, category, date)
-> - `TransactionUpdate` — for updating (all fields optional)
-> - `TransactionResponse` — what the API returns (includes id and created_at)"
+- `TransactionCreate` — the data needed to create a transaction (description, amount, type, category, date)
+- `TransactionUpdate` — for updating (all fields optional)
+- `TransactionResponse` — what the API returns (includes id and created_at)
 
 #### Step 1.4: Build the API Endpoints
 
@@ -652,19 +792,6 @@ User sends: { amount: "not a number" }  →  Pydantic: "Error: amount must be a 
 │          │                      │  balance, category breakdown)     │
 └──────────┴──────────────────────┴────────────────────────────────────┘
 ```
-
-**What to tell Claude Code:**
-
-> "Create FastAPI endpoints in `backend/main.py`:
->
-> 1. GET `/transactions` — returns all transactions, with optional query parameters to filter by type, category, and date range
-> 2. GET `/transactions/{id}` — returns a single transaction
-> 3. POST `/transactions` — creates a new transaction
-> 4. PUT `/transactions/{id}` — updates an existing transaction
-> 5. DELETE `/transactions/{id}` — deletes a transaction
-> 6. GET `/summary` — returns total income, total expense, balance, and category-wise breakdown
->
-> Use SQLAlchemy for database operations. Include CORS middleware so the frontend can connect."
 
 **What is CORS?** When your frontend (localhost:3000) tries to talk to your backend (localhost:8000), the browser blocks it by default for security. CORS (Cross-Origin Resource Sharing) is a setting that tells the browser "it's OK, this frontend is allowed to talk to me."
 
@@ -755,18 +882,16 @@ The Server Action is just a function, for example:
   }
 ```
 
-**What to tell Claude Code:**
+**The Server Actions you'll need:**
 
-> "Create Server Actions in `frontend/app/actions/transactions.ts` with these functions:
->
-> - `getTransactions()` — fetches all transactions from FastAPI
-> - `getTransactionById(id)` — fetches one transaction
-> - `addTransaction(data)` — sends new transaction to FastAPI
-> - `updateTransaction(id, data)` — updates a transaction
-> - `deleteTransaction(id)` — deletes a transaction
-> - `getSummary()` — fetches the financial summary
->
-> Each function should call the corresponding FastAPI endpoint at `http://localhost:8000`."
+- `getTransactions()` — fetches all transactions from FastAPI
+- `getTransactionById(id)` — fetches one transaction
+- `addTransaction(data)` — sends new transaction to FastAPI
+- `updateTransaction(id, data)` — updates a transaction
+- `deleteTransaction(id)` — deletes a transaction
+- `getSummary()` — fetches the financial summary
+
+Each function should call the corresponding FastAPI endpoint at `http://localhost:8000`.
 
 #### Step 2.3: Build the Dashboard Page
 
@@ -810,58 +935,51 @@ The Server Action is just a function, for example:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-**What to tell Claude Code:**
+**The dashboard should:**
 
-> "Build the dashboard page at `frontend/app/page.tsx` that:
->
-> 1. Shows three summary cards at the top: Total Income (green), Total Expenses (red), Balance (blue)
-> 2. Shows a pie/donut chart for category-wise spending breakdown
-> 3. Shows a list of recent transactions with color-coding (green for income, red for expense)
-> 4. Has a button to add a new transaction
-> 5. Uses the Server Actions to fetch data from the backend
-> 6. Use Tailwind CSS for styling and any chart library like recharts for the pie chart"
+1. Show three summary cards at the top: Total Income (green), Total Expenses (red), Balance (blue)
+2. Show a pie/donut chart for category-wise spending breakdown (use a chart library like Recharts)
+3. Show a list of recent transactions with color-coding (green for income, red for expense)
+4. Have a button to add a new transaction
+5. Use the Server Actions to fetch data from the backend
+6. Use Tailwind CSS for styling
 
 #### Step 2.4: Build the Transaction Form
 
 **What you're doing:** Creating a form that lets users add or edit transactions.
 
-**What to tell Claude Code:**
+**The form should have:**
 
-> "Create a transaction form component at `frontend/components/TransactionForm.tsx` that:
->
-> 1. Has fields for: description, amount, type (income/expense dropdown), category (dropdown with options: food, transport, shopping, bills, salary, freelance, entertainment, health, education, other), and date
-> 2. When submitted, calls the `addTransaction` Server Action
-> 3. If editing, pre-fills the form and calls `updateTransaction`
-> 4. Shows validation errors (amount must be positive, description required)
-> 5. After successful submission, refreshes the transaction list"
+1. Fields for: description, amount, type (income/expense dropdown), category (dropdown with options: food, transport, shopping, bills, salary, freelance, entertainment, health, education, other), and date
+2. When submitted, calls the `addTransaction` Server Action
+3. If editing, pre-fills the form and calls `updateTransaction`
+4. Shows validation errors (amount must be positive, description required)
+5. After successful submission, refreshes the transaction list
 
 #### Step 2.5: Build the Transaction List with Filters
 
 **What you're doing:** Showing all transactions with the ability to filter and search.
 
-**What to tell Claude Code:**
+**The transaction list should:**
 
-> "Create a transaction list page at `frontend/app/transactions/page.tsx` that:
->
-> 1. Shows all transactions in a clean table or card layout
-> 2. Has filter options: by type (all/income/expense), by category, by date range
-> 3. Each transaction has edit and delete buttons
-> 4. Delete shows a confirmation dialog before deleting
-> 5. Edit opens the transaction form pre-filled with data
-> 6. Uses Server Actions for all data operations"
+1. Show all transactions in a clean table or card layout
+2. Have filter options: by type (all/income/expense), by category, by date range
+3. Each transaction has edit and delete buttons
+4. Delete shows a confirmation dialog before deleting
+5. Edit opens the transaction form pre-filled with data
+6. Use Server Actions for all data operations
 
 #### Step 2.6: Add Navigation
 
 **What you're doing:** Adding a navigation bar so users can move between pages (Dashboard and Transactions).
 
-**What to tell Claude Code:**
+**The navigation should include links to:**
 
-> "Add a navigation bar in `frontend/app/layout.tsx` with links to:
->
-> 1. Dashboard (home page `/`)
-> 2. All Transactions (`/transactions`)
-> 3. Add Transaction (`/transactions/new`)
->    The nav should highlight the current active page."
+1. Dashboard (home page `/`)
+2. All Transactions (`/transactions`)
+3. Add Transaction (`/transactions/new`)
+
+The nav should highlight the current active page.
 
 ---
 
@@ -978,20 +1096,17 @@ uv add --dev pytest httpx
 
 **What is httpx?** It's like a fake browser that can send requests to your FastAPI app during tests, without actually starting the server.
 
-Now tell Claude Code to write the tests:
+**Your backend tests should cover:**
 
-> **Prompt to Claude Code:**
-> "Write pytest tests for my FastAPI backend in `backend/tests/test_transactions.py`. The tests should cover:
->
-> 1. Creating a transaction via POST `/transactions` and checking it returns 201
-> 2. Getting all transactions via GET `/transactions`
-> 3. Getting a single transaction by ID
-> 4. Updating a transaction via PUT `/transactions/{id}`
-> 5. Deleting a transaction via DELETE `/transactions/{id}`
-> 6. Trying to create a transaction with invalid data (negative amount) and checking it returns 422
-> 7. Testing the GET `/summary` endpoint returns correct totals
->
-> Use httpx.AsyncClient with FastAPI's TestClient. Use a test database (SQLite in-memory) so tests don't affect real data."
+1. Creating a transaction via POST `/transactions` and checking it returns 201
+2. Getting all transactions via GET `/transactions`
+3. Getting a single transaction by ID
+4. Updating a transaction via PUT `/transactions/{id}`
+5. Deleting a transaction via DELETE `/transactions/{id}`
+6. Trying to create a transaction with invalid data (negative amount) and checking it returns 422
+7. Testing the GET `/summary` endpoint returns correct totals
+
+The tests should use httpx.AsyncClient with FastAPI's TestClient, and a test database (SQLite in-memory) so tests don't affect real data.
 
 **How a test looks (conceptually):**
 
@@ -1033,10 +1148,7 @@ test_summary.py::test_summary_calculations             PASSED  ✅
 
 Here's the important part: **don't just write tests — make sure they pass!**
 
-If tests fail, work with Claude Code to fix the issues:
-
-> **Prompt to Claude Code:**
-> "My test `test_create_transaction` is failing with this error: [paste error]. Can you help me fix it?"
+If tests fail, read the error message carefully — it tells you exactly what went wrong. Since Claude Code is working from your SPEC.md, it will write tests and fix any failures as part of the task list.
 
 The goal is:
 
@@ -1129,13 +1241,14 @@ Your app should support these transaction categories:
 Submit a **GitHub repository** containing:
 
 1. ✅ **Complete source code** (both `backend/` and `frontend/` folders)
-2. ✅ **README.md** with:
+2. ✅ **SPEC.md** — the spec file generated by Claude Code showing all tasks (with completed checkboxes)
+3. ✅ **README.md** with:
    - Project name and description
    - Screenshots of your app (dashboard, form, transaction list)
    - How to set up and run the project (step-by-step, using `uv` and `npm`)
    - How to run the tests (`uv run pytest -v` and `npx vitest run`)
    - What technologies you used and why
-   - How you used Claude Code (be specific about what prompts you gave)
+   - How you used Claude Code with the spec-driven approach
 3. ✅ **`.env.example`** file showing what environment variables are needed (without actual passwords)
 4. ✅ **Working app** — The instructors will clone your repo and try to run it
 5. ✅ **Passing tests** — All backend tests must pass
@@ -1162,16 +1275,13 @@ cd backend && uv run pytest -v
 
 ## 💡 Tips for Working with Claude Code
 
-1. **Build incrementally.** Don't try to prompt Claude Code for the entire app at once. Follow the phases — backend first, then frontend, then tests.
-2. **Test after each step.** After each phase, make sure it works before moving on. It's much harder to debug everything at the end.
-3. **Be specific in your prompts.** Instead of "build me a finance app," tell Claude Code exactly what you want:
-
-   > "Create a FastAPI endpoint that accepts a POST request at `/transactions` with fields: description (string), amount (float), type (string), category (string), date (date). Validate that amount is positive and type is either 'income' or 'expense'. Save it to the PostgreSQL database using SQLAlchemy. I'm using uv for package management."
-   >
+1. **Use the spec-driven approach.** Give this entire assignment document to Claude Code and let it generate a SPEC.md with tasks. Don't give random prompts — let the spec guide the work.
+2. **Test after each phase.** After each phase is complete in SPEC.md, verify it works before letting Claude move on. It's much harder to debug everything at the end.
+3. **If Claude loses context, say:** "Read SPEC.md and continue from where we left off." This is the magic of spec-driven development — Claude can always resume.
 4. **Understand what Claude Code generates.** After Claude generates code, read through it and make sure you can explain what each part does. If you don't understand something, ask Claude Code to explain it.
 5. **Use `/docs` to test your backend.** Before building any frontend, make sure your API works by testing it through FastAPI's built-in documentation page.
 6. **Keep your terminal open.** Watch for errors in both the backend and frontend terminals. Error messages tell you exactly what's wrong.
-7. **Write tests as you go.** After building each feature, ask Claude Code to write tests for it. Don't leave all testing for the end.
+7. **Check SPEC.md regularly.** It's your progress dashboard. Glance at it to see which tasks are done and which are next.
 8. **Use `uv run` for everything Python.** Never run `python` or `pip` directly. Always use `uv run python ...`, `uv run pytest`, etc. This ensures you're always using the correct virtual environment.
 
 ---
@@ -1231,7 +1341,7 @@ By completing this assignment, you will understand:
 | Why testing matters in real projects                    | By catching bugs before they reach users      |
 | How to structure a real project                         | By organizing code into frontend & backend    |
 | How to read error messages and debug                    | By testing at each step                       |
-| How to use AI coding tools effectively                  | By prompting Claude Code strategically        |
+| How to use AI coding tools effectively                  | By using spec-driven development with Claude Code |
 
 You're not just building a finance tracker — you're learning how **every web application in the world** is built. The same patterns (frontend → API → database) are used by Instagram, Amazon, Uber, and every other app you use daily.
 
